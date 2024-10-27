@@ -1,8 +1,10 @@
 package diary.repository;
 
 import jakarta.persistence.*;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class DiaryEntity {
@@ -14,20 +16,20 @@ public class DiaryEntity {
     public String name;
     public String title;
     public String content;
-    final private LocalDate createdAt;
+    final private LocalDateTime createdAt;
 
     public DiaryEntity(){
         this.name = "";
         this.title = "";
         this.content = "";
-        this.createdAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     public DiaryEntity(String name, String title, String content){
         this.name = name;
         this.title = title;
         this.content = content;
-        this.createdAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -46,7 +48,7 @@ public class DiaryEntity {
         return content;
     }
 
-    public LocalDate getCreatedAt(){
+    public LocalDateTime getCreatedAt(){
         return createdAt;
     }
 

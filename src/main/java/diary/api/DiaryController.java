@@ -54,7 +54,7 @@ public class DiaryController {
         // Client와 협의한 interface로 변환
         List<DiaryResponse> diaryResponseList = new ArrayList<>();
         for(Diary diary : diaryList){
-            diaryResponseList.add(new DiaryResponse(diary.getId(), diary.getName(), diary.getTitle(), diary.getContent(), diary.getCreatedAt()));
+            diaryResponseList.add(new DiaryResponse(diary.getId(), null, diary.getTitle(), null, null));
         }
 
         return ResponseEntity.ok(new DiaryListResponse(diaryResponseList));

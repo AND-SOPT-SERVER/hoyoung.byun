@@ -6,7 +6,9 @@ import diary.repository.DiaryRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class DiaryService {
@@ -28,14 +30,25 @@ public class DiaryService {
         // repository로부터 DiaryEntity(DB에서 가져온 것)를 가져옴
         final List<DiaryEntity> diaryEntityList = diaryRepository.findAll();
 
+        // createdAt 기준으로 내림차순 정렬
+        diaryEntityList.sort(Comparator.comparing(DiaryEntity::getCreatedAt).reversed());
+
         // DiaryEntity를 Diary로 변환
         final List<Diary> diaryList = new ArrayList<>();
 
+
+        int i = 0;
         for(DiaryEntity diaryEntity : diaryEntityList) {
-            diaryList.add(
-                    new Diary(diaryEntity.getId(), diaryEntity.getName())
-            );
+            if(i < 10){
+                i++;
+                diaryList.add(
+                        new Diary(diaryEntity.getId(), diaryEntity.getTitle())
+                );
+            } else {
+                break;
+            }
         }
+
         return diaryList;
     }
 

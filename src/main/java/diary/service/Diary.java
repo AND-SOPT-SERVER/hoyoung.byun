@@ -1,37 +1,24 @@
 package diary.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Diary {
 
     private final long id;
-    private final String name;
     public String title;
-    public String content;
-    public LocalDate createdAt;
 
-    public Diary(Long id, String name){
+    public Diary(Long id, String title){
         this.id = id;
-        this.name = name;
+        this.title = title;
     }
 
     public long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
 
     public String getTitle() {
         return title;
-    }
-
-    public String getContent(){
-        return content;
-    }
-
-    public LocalDate getCreatedAt(){
-        return createdAt;
     }
 }
