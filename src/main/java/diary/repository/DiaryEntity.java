@@ -13,13 +13,17 @@ public class DiaryEntity {
     public String name;
     public String title;
     public String content;
+    public int contentLength;
     final private LocalDateTime createdAt;
+    public LocalDateTime updatedAt;
 
     public DiaryEntity(){
         this.name = "";
         this.title = "";
         this.content = "";
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.contentLength = 0;
     }
 
     public DiaryEntity(String name, String title, String content){
@@ -27,15 +31,15 @@ public class DiaryEntity {
         this.title = title;
         this.content = content;
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.contentLength = content.length();
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName(){
-        return name;
-    }
+    public String getName() { return name; }
 
     public String getTitle(){
         return title;
@@ -45,8 +49,14 @@ public class DiaryEntity {
         return content;
     }
 
+    public int getContentLength() { return contentLength; }
+
     public LocalDateTime getCreatedAt(){
         return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt(){
+        return updatedAt;
     }
 
     public void setTitle(String title){

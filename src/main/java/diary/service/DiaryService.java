@@ -3,8 +3,11 @@ package diary.service;
 import diary.api.DiaryResponse;
 import diary.repository.DiaryEntity;
 import diary.repository.DiaryRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -20,21 +23,35 @@ public class DiaryService {
 
     public void createDiary(String name, String title, String content){
 
+        DiaryEntity recentDiary = diaryRepository.findTopByOrderByUpdatedAtDesc();
+
+        if(recentDiary != null){
+            LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(5);
+
+            if(recentDiary.getUpdatedAt().isAfter(timeLimit)){
+                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,"조금 후에 다시 시도해주세요.");
+            }
+        }
+
         DiaryEntity diaryEntity = new DiaryEntity(name, title, content);
         diaryRepository.save(diaryEntity);
     }
 
-    public List<Diary> getList(){
+    public List<Diary> getList(int mode){
 
         // repository로부터 DiaryEntity(DB에서 가져온 것)를 가져옴
         final List<DiaryEntity> diaryEntityList = diaryRepository.findAll();
 
-        // createdAt 기준으로 내림차순 정렬
-        diaryEntityList.sort(Comparator.comparing(DiaryEntity::getCreatedAt).reversed());
+        if(mode == 0){
+            // createdAt 기준으로 내림차순 정렬
+            diaryEntityList.sort(Comparator.comparing(DiaryEntity::getCreatedAt).reversed());
+        } else {
+            // contentLength 기준으로 내림차순 정렬
+            diaryEntityList.sort(Comparator.comparing(DiaryEntity::getContentLength).reversed());
+        }
 
         // DiaryEntity를 Diary로 변환
         final List<Diary> diaryList = new ArrayList<>();
-
 
         int i = 0;
         for(DiaryEntity diaryEntity : diaryEntityList) {
