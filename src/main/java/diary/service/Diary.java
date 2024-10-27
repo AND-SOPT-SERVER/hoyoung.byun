@@ -1,8 +1,5 @@
 package diary.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 public class Diary {
 
     private final long id;

@@ -2,7 +2,6 @@ package diary.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude; // null인 type을 response에 포함시키지 않음
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL) // null 필드 제외
