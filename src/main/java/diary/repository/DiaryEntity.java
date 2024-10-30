@@ -7,23 +7,28 @@ import java.time.LocalDateTime;
 public class DiaryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @Column
-    public String name;
-    public String title;
-    public String content;
-    public int contentLength;
-    final private LocalDateTime createdAt;
-    public LocalDateTime updatedAt;
+    private String name;
+
+    @Column
+    private String title;
+
+    @Column
+    private String content;
+
+    @Column
+    private int contentLength;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime updatedAt;
 
     public DiaryEntity(){
-        this.name = "";
-        this.title = "";
-        this.content = "";
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.contentLength = 0;
+
     }
 
     public DiaryEntity(String name, String title, String content){
