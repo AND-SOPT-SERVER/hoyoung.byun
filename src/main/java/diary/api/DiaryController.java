@@ -3,6 +3,7 @@ package diary.api;
 import diary.repository.DiaryEntity;
 import diary.service.Diary;
 import diary.service.DiaryService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,22 +36,17 @@ public class DiaryController {
             String title = request.get("title");
             String content = request.get("content");
 
-            System.out.println(name);
-            System.out.println(title);
-            System.out.println(content);
-
-            // 30자 제한 체크
-            if(content.length() > 30){
-                return ResponseEntity.badRequest().body("일기는 30자 이하로 작성해주세요.");
-            }
-
             // Diary 생성
             diaryService.createDiary(name, title, content);
 
             return ResponseEntity.status(201).body("새로운 일기가 생성되었습니다.");
 
         } catch (ResponseStatusException e) {
+            // 5분 이내 업데이트 발생
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (BadRequestException e) {
+            // 30자 초과
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

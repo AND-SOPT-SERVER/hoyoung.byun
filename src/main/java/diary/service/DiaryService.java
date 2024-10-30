@@ -3,7 +3,9 @@ package diary.service;
 import diary.api.DiaryResponse;
 import diary.repository.DiaryEntity;
 import diary.repository.DiaryRepository;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,18 +23,25 @@ public class DiaryService {
         this.diaryRepository = diaryRepository;
     }
 
-    public void createDiary(String name, String title, String content){
+    public void createDiary(String name, String title, String content) throws BadRequestException {
 
-        DiaryEntity recentDiary = diaryRepository.findTopByOrderByUpdatedAtDesc();
-
-        if(recentDiary != null){
-            LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(5);
-
-            if(recentDiary.getUpdatedAt().isAfter(timeLimit)){
-                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,"조금 후에 다시 시도해주세요.");
-            }
+        // 30자 제한 체크
+        if(content.length() > 30){
+            throw new BadRequestException("일기는 30자 이하로 작성해주세요.");
         }
 
+//        // 가장 최근의 update 시간 확인
+//        DiaryEntity recentDiary = diaryRepository.findTopByOrderByUpdatedAtDesc();
+//
+//        if(recentDiary != null){
+//            LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(5);
+//
+//            if(recentDiary.getUpdatedAt().isAfter(timeLimit)){
+//                throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,"조금 후에 다시 시도해주세요.");
+//            }
+//        }
+
+        // 문제 없을 경우 일기 생성
         DiaryEntity diaryEntity = new DiaryEntity(name, title, content);
         diaryRepository.save(diaryEntity);
     }
