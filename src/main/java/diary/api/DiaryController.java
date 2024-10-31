@@ -1,8 +1,11 @@
 package diary.api;
 
+import diary.repository.Category;
 import diary.repository.DiaryEntity;
+import diary.repository.DiaryRepository;
 import diary.service.Diary;
 import diary.service.DiaryService;
+import diary.service.UserService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,18 +29,17 @@ public class DiaryController {
         this.diaryService = diaryService;
     }
 
-
     @PostMapping("/diary")
-    ResponseEntity<String> postDiary(@RequestBody DiaryRequest diaryRequest) {
+    ResponseEntity<String> postDiary(@RequestHeader("user_id") Long user_id, @RequestBody DiaryRequest diaryRequest) {
 
         // Diary 생성
-        diaryService.createDiary(diaryRequest.name(), diaryRequest.title(), diaryRequest.content());
+        diaryService.createDiary(diaryRequest.title(), diaryRequest.content(), user_id, diaryRequest.category(), diaryRequest.isShare());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("새로운 일기가 생성되었습니다.");
     }
 
 
-    @GetMapping("/diary")
+    @GetMapping("/diary/home")
     ResponseEntity<DiaryListResponse> getAllDiaries(){
 
         // 서비스로부터 가져온 diary list
@@ -46,22 +48,14 @@ public class DiaryController {
 
         // Client와 협의한 interface로 변환
         List<DiaryResponse> diaryResponseList = diaryList.stream()
-                .map(diary -> new DiaryResponse(diary.getId(), null, diary.getTitle(), null, null))
+                .map(diary -> new DiaryResponse(diary.getId(), diary.getNickname(), diary.getTitle(), null, diary.getCreatedAt()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new DiaryListResponse(diaryResponseList));
     }
 
-    @GetMapping("/diary/{id}")
-    ResponseEntity<DiaryResponse> getDiaryDetail(@PathVariable Long id) {
 
-        DiaryResponse diaryResponse = diaryService.getDiaryById(id);
-
-        return ResponseEntity.ok(diaryResponse);
-
-    }
-
-    @GetMapping("/diary/length")
+    @GetMapping("/diary/home/byLength")
     ResponseEntity<DiaryListResponse> getDiariesByLength(){
 
         // 서비스로부터 가져온 diary list
@@ -71,25 +65,82 @@ public class DiaryController {
         // Client와 협의한 interface로 변환
         List<DiaryResponse> diaryResponseList = new ArrayList<>();
         for(Diary diary : diaryList){
-            diaryResponseList.add(new DiaryResponse(diary.getId(), null, diary.getTitle(), null, null));
+            diaryResponseList.add(new DiaryResponse(diary.getId(), diary.getNickname() ,diary.getTitle(), null, null));
+        }
+
+        return ResponseEntity.ok(new DiaryListResponse(diaryResponseList));
+    }
+
+    @GetMapping("diary/home/{category}")
+    ResponseEntity<DiaryListResponse> getDiaryByCategory(@PathVariable Category category) {
+
+        // 서비스로부터 가져온 diary list
+        boolean isHome = true; // 전체 일기 조회하기
+        List<Diary> diaryList = diaryService.getCategoryList(null, category, isHome);
+
+        // Client와 협의한 interface로 변환
+        List<DiaryResponse> diaryResponseList = new ArrayList<>();
+        for(Diary diary : diaryList){
+            diaryResponseList.add(new DiaryResponse(diary.getId(), diary.getNickname() ,diary.getTitle(), null, null));
         }
 
         return ResponseEntity.ok(new DiaryListResponse(diaryResponseList));
     }
 
 
-    @PatchMapping("/diary/{id}")
-    ResponseEntity<String> updateDiary(@PathVariable Long id, @RequestBody DiaryRequest diaryRequest){
+    @GetMapping("/diary/me")
+    ResponseEntity<DiaryListResponse> getMyDiary(@RequestHeader("user_id") Long user_id) {
 
-        diaryService.updateDiary(id, diaryRequest.title(), diaryRequest.content());
+        // 서비스로부터 가져온 diary list
+        boolean orderByDate = true; // 최신순으로 가져옴
+        List<Diary> diaryList = diaryService.getMyList(orderByDate, user_id);
+
+        // Client와 협의한 interface로 변환
+        List<DiaryResponse> diaryResponseList = diaryList.stream()
+                .map(diary -> new DiaryResponse(diary.getId(), null,diary.getTitle(), null, diary.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new DiaryListResponse(diaryResponseList));
+    }
+
+    @GetMapping("diary/me/{category}")
+    ResponseEntity<DiaryListResponse> getDiaryByCategory(@RequestHeader("user_id") Long user_id, @PathVariable Category category) {
+
+        // 서비스로부터 가져온 diary list
+        boolean isHome = false; // 내 일기 조회
+        List<Diary> diaryList = diaryService.getCategoryList(user_id, category, isHome);
+
+        // Client와 협의한 interface로 변환
+        List<DiaryResponse> diaryResponseList = new ArrayList<>();
+        for(Diary diary : diaryList){
+            diaryResponseList.add(new DiaryResponse(diary.getId(), diary.getNickname() ,diary.getTitle(), null, null));
+        }
+
+        return ResponseEntity.ok(new DiaryListResponse(diaryResponseList));
+    }
+
+    @GetMapping("/diary/{id}")
+    ResponseEntity<DiaryResponse> getDiaryDetail(@RequestHeader("user_id") Long user_id, @PathVariable Long id) {
+
+        DiaryResponse diaryResponse = diaryService.getDiaryById(id, user_id);
+
+        return ResponseEntity.ok(diaryResponse);
+    }
+
+
+
+    @PatchMapping("/diary/{id}")
+    ResponseEntity<String> updateDiary(@RequestHeader("user_id") Long user_id, @PathVariable Long id, @RequestBody DiaryRequest diaryRequest){
+
+        diaryService.updateDiary(id, user_id, diaryRequest);
         return ResponseEntity.ok("업데이트가 완료되었습니다.");
     }
 
 
     @DeleteMapping("/diary/{id}")
-    ResponseEntity<String> deleteDiary(@PathVariable Long id){
+    ResponseEntity<String> deleteDiary(@RequestHeader("user_id") Long user_id, @PathVariable Long id){
 
-        diaryService.deleteDiary(id);
+        diaryService.deleteDiary(id, user_id);
 
         return ResponseEntity.ok("삭제가 완료되었습니다.");
     }
