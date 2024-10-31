@@ -1,5 +1,7 @@
 package diary.service;
 
+import diary.api.DiaryRequest;
+
 public class Diary {
 
     private final long id;
@@ -9,6 +11,7 @@ public class Diary {
         this.id = id;
         this.title = title;
     }
+
 
     public long getId() {
         return id;

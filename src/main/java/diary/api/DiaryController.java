@@ -28,18 +28,12 @@ public class DiaryController {
 
 
     @PostMapping("/diary")
-    ResponseEntity<String> postDiary(@RequestBody Map<String, String> request) {
-
-        // 최근 5분 이내의 update가 존재할 경우 예외 반환
-
-        String name = request.get("name");
-        String title = request.get("title");
-        String content = request.get("content");
+    ResponseEntity<String> postDiary(@RequestBody DiaryRequest diaryRequest) {
 
         // Diary 생성
-        diaryService.createDiary(name, title, content);
+        diaryService.createDiary(diaryRequest.name(), diaryRequest.title(), diaryRequest.content());
 
-        return ResponseEntity.status(201).body("새로운 일기가 생성되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("새로운 일기가 생성되었습니다.");
     }
 
 
@@ -60,12 +54,11 @@ public class DiaryController {
 
     @GetMapping("/diary/{id}")
     ResponseEntity<DiaryResponse> getDiaryDetail(@PathVariable Long id) {
-        try{
-            DiaryResponse diaryResponse = diaryService.getDiaryById(id);
-            return ResponseEntity.ok(diaryResponse);
-        } catch(IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+
+        DiaryResponse diaryResponse = diaryService.getDiaryById(id);
+
+        return ResponseEntity.ok(diaryResponse);
+
     }
 
     @GetMapping("/diary/length")
@@ -86,12 +79,9 @@ public class DiaryController {
 
 
     @PatchMapping("/diary/{id}")
-    ResponseEntity<String> updateDiary(@PathVariable Long id, @RequestBody Map<String, String> request){
+    ResponseEntity<String> updateDiary(@PathVariable Long id, @RequestBody DiaryRequest diaryRequest){
 
-        String title = request.get("title");
-        String content = request.get("content");
-
-        diaryService.updateDiary(id, title, content);
+        diaryService.updateDiary(id, diaryRequest.title(), diaryRequest.content());
         return ResponseEntity.ok("업데이트가 완료되었습니다.");
     }
 

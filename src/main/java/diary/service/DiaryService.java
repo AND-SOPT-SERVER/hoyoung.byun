@@ -7,6 +7,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class DiaryService {
         this.diaryRepository = diaryRepository;
     }
 
+    @Transactional
     public void createDiary(String name, String title, String content) {
 
         final int MAX_CONTENT_LENGTH = 30;
@@ -50,6 +52,7 @@ public class DiaryService {
         diaryRepository.save(diaryEntity);
     }
 
+    @Transactional(readOnly = true)
     public List<Diary> getList(boolean orderByDate){
 
         // repository로부터 DiaryEntity(DB에서 가져온 것)를 가져옴
@@ -82,31 +85,34 @@ public class DiaryService {
         return diaryList;
     }
 
+    @Transactional(readOnly = true)
     public DiaryResponse getDiaryById(Long id){
         DiaryEntity diaryEntity = diaryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id에 맞는 일기가 존재하지 않습니다"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 id에 맞는 일기가 존재하지 않습니다"));
         return new DiaryResponse(diaryEntity.getId(), diaryEntity.getName(), diaryEntity.getTitle(), diaryEntity.getContent(), diaryEntity.getCreatedAt());
     }
 
+    @Transactional
     public void updateDiary(Long id, String title, String content){
 
         DiaryEntity diary = diaryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id에 맞는 일기가 존재하지 않습니다"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 id에 맞는 일기가 존재하지 않습니다"));
 
         // 값 업데이트
         diary.setTitle(title);
         diary.setContent(content);
 
-        // 저장
-        diaryRepository.save(diary);
+        // @Transactional annotation에 의해 수정사항 자동으로 반영
+        // diaryRepository.save(diary);
     }
 
+    @Transactional
     public void deleteDiary(Long id){
 
         if(!diaryRepository.existsById(id)){
 
             // 따로 Controller에서 예외처리 필요 없음!
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 id에 맞는 일기가 존재하지 않습니다");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 id에 맞는 일기가 존재하지 않습니다");
         }
 
         diaryRepository.deleteById(id);
