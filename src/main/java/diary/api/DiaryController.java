@@ -75,8 +75,8 @@ public class DiaryController {
     ResponseEntity<DiaryListResponse> getDiaryByCategory(@PathVariable Category category) {
 
         // 서비스로부터 가져온 diary list
-        boolean isShare = true; // isShare가 true인 것들만 반환
-        List<Diary> diaryList = diaryService.getCategoryList(null, category, isShare);
+        boolean isHome = true; // 전체 일기 조회하기
+        List<Diary> diaryList = diaryService.getCategoryList(null, category, isHome);
 
         // Client와 협의한 interface로 변환
         List<DiaryResponse> diaryResponseList = new ArrayList<>();
@@ -107,8 +107,8 @@ public class DiaryController {
     ResponseEntity<DiaryListResponse> getDiaryByCategory(@RequestHeader("user_id") Long user_id, @PathVariable Category category) {
 
         // 서비스로부터 가져온 diary list
-        boolean isShare = false; // isShare가 true인 것들만 반환
-        List<Diary> diaryList = diaryService.getCategoryList(user_id, category, isShare);
+        boolean isHome = false; // 내 일기 조회
+        List<Diary> diaryList = diaryService.getCategoryList(user_id, category, isHome);
 
         // Client와 협의한 interface로 변환
         List<DiaryResponse> diaryResponseList = new ArrayList<>();

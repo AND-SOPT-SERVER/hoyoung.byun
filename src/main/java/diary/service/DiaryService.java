@@ -145,11 +145,11 @@ public class DiaryService {
 
 
     @Transactional(readOnly = true)
-    public List<Diary> getCategoryList(Long user_id, Category category, boolean isShare){
+    public List<Diary> getCategoryList(Long user_id, Category category, boolean isHome){
 
         List<DiaryEntity> diaryEntityList;
 
-        if(isShare){
+        if(isHome){
             // isShare가 true인 일기 중 category에 맞는 것 가져옴
             diaryEntityList = diaryRepository.findByIsShareTrueAndCategory(category);
 
@@ -179,9 +179,7 @@ public class DiaryService {
                 break;
             }
         }
-
         return diaryList;
-
     }
 
     @Transactional(readOnly = true)
