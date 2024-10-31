@@ -3,6 +3,7 @@ package diary.api;
 import diary.repository.DiaryEntity;
 import diary.service.Diary;
 import diary.service.DiaryService;
+import diary.service.UserService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,6 @@ public class DiaryController {
     public DiaryController(DiaryService diaryService){
         this.diaryService = diaryService;
     }
-
 
     @PostMapping("/diary")
     ResponseEntity<String> postDiary(@RequestBody DiaryRequest diaryRequest) {

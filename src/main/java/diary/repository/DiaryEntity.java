@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "hyb_diary")
 public class DiaryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +27,15 @@ public class DiaryEntity {
 
     @Column
     private LocalDateTime updatedAt;
+
+//    @Column
+//    private enum category;
+
+    @Column
+    private long user_id;
+
+    @Column
+    private int isShare;
 
     public DiaryEntity(){
 

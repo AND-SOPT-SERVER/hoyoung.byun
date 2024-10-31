@@ -25,6 +25,7 @@ public class DiaryService {
         this.diaryRepository = diaryRepository;
     }
 
+
     @Transactional
     public void createDiary(String name, String title, String content) {
 
