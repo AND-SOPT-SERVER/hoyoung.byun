@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByNickname(String nickname); // 닉네임으로 사용자 조회
+    Optional<UserEntity> findById(Long userId);
 }

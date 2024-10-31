@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class AuthController {
+public class UserController {
 
     private final UserService userService;
 
-    public AuthController(UserService userService){
+    public UserController(UserService userService){
         this.userService = userService;
     }
 
@@ -25,11 +25,11 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    ResponseEntity<Long> login(@RequestBody UserRequest userRequest){
+    ResponseEntity<UserResponse> login(@RequestBody UserRequest userRequest){
 
         Long user_id = userService.verifyUser(userRequest.nickname(), userRequest.password());
 
-        return ResponseEntity.ok(user_id);
+        return ResponseEntity.ok(new UserResponse(user_id));
     }
 
 }

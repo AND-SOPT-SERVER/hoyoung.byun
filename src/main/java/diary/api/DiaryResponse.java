@@ -7,16 +7,16 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL) // null 필드 제외
 public class DiaryResponse {
 
-    private long id;
-    private String name;
+    private Long id;
+    private String nickname;
     private String title;
     private String content;
     private LocalDateTime createdAt;
 
 
-    public DiaryResponse(long id, String name, String title, String content, LocalDateTime createdAt){
+    public DiaryResponse(Long id, String nickname ,String title, String content, LocalDateTime createdAt){
         this.id = id;
-        this.name = name;
+        this.nickname = nickname;
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
@@ -27,8 +27,8 @@ public class DiaryResponse {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getNickname() {
+        return nickname;
     }
 
     public String getTitle() {
